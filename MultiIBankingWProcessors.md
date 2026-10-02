@@ -1,3 +1,4 @@
+Estudiante : Andrés Madrigal
 ## Spec
 
 //El usuario genera un dato para su transaccion y este pasa 
