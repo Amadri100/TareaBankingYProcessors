@@ -20,7 +20,6 @@ por varias capas hasta llegar a la implementacion especifica del procesador para
 
 #### IdNacional (extends Identificacion)
 - fechaNacimiento : Date 
-- fechaCaducidad : Date
 #### IdImpuesto (extends Identificacion)
 //El sistema no necesita más informacion
 #### Pasaporte
@@ -28,11 +27,14 @@ por varias capas hasta llegar a la implementacion especifica del procesador para
 - nacionalidad : String
 - fechaDeExpedicion : Date
 - fechaCaducidad : Date
++ esValido() : boolean
 #### Residencia
 - pais : String
 - fechaCaducidad : Date
 + Residencia(pais : String, fechaCaducidad : Date)
-+ estaVigente() : booleam
++ estaVigente() : boolean
+
+
 ### operaciones
 
 #### TipoOperacion (enum)
@@ -126,6 +128,8 @@ por varias capas hasta llegar a la implementacion especifica del procesador para
 + domesticTransfer(info : InformacionOperacion, procesador : Procesador) : Resultado
 + internationalTransfer(info : InformacionOperacion, procesador : Procesador) : Resultado
 
+
+
 ### procesadores
 
 #### TipoProcesador 
@@ -163,6 +167,93 @@ por varias capas hasta llegar a la implementacion especifica del procesador para
  
 //El banco solo se encarga de pasarle a la cuenta la operacion y guardarla si fue exitos / mostrar el error.
 
+## Usos de polimorfismo:
+En las clases de Cuenta podemos ver un ejemplo de polimorfismo, en la forma de como se implementa.
+
+Usemos como ejemplo el metodo depositar, el cual se puede comenzar a construir con una base en el super:
+
+```
+public abstract class Cuenta implements Depositar, Withdraw {
+    /*Codigo*/
+
+    @Override
+    public Resultado depositar(InformacionOperacion info, Procesador procesador) {
+        if(!Procesador.PermiteOperacion(info.getTipo()))  
+        {
+            //Retorna un resultado con mensaje de error
+        }
+        Return RealizarOperacion(info);
+        //Mas codigo relacionado
+    }
+    /*Codigo*/
+}
+
+```
+Cuentas basicas como la cuenta personal problemente puedan utilizarla sin mayor problema como super; o simplemente no se le hace Override.
+```
+public class Personal extends Cuenta implements DomesticTransfer {
+    /*Codigo*/
+
+    @Override
+    public Resultado depositar(InformacionOperacion info, Procesador procesador) {
+        Resultado resultado = super.depositar(info, procesador);
+        // Algun cambio en los resultados si es necesario
+        return(resultado);
+    }
+    /*Codigo*/
+}
+```
+Mientras que clases más complejas como Extranjero donde hay que hacer una verificacion se pueden ver así:
+```
+public class Personal extends Cuenta implements DomesticTransfer, InternationalTransfer {
+    /*Codigo*/
+    @Override
+    public Resultado depositar(InformacionOperacion info, Procesador procesador) {
+        if (this.documentoResidencia.estaVigente()) {
+            Resultado resultado = super.depositar(info, procesador);
+            // Algun cambio en los resultados si es necesario
+            return(resultado);
+        }
+        else {
+            //Creamos un mensaje en resultado de error indicando que la cuenta ya no se puede usar
+        }
+    }
+    /*Codigo*/
+}
+```
+Otro ejemplo son los procesadores, no conocemos exactamente como se utilizan. Como funciona exactamente la Api de ninguno de ellos y pueden utilizar objetos totalmente imcompatibles.
+
+Digamos que el NacionalBank funciona por alguna razon de forma local y se pasan por atributos, mientras que con PacificBank es por red.
+```
+public class NationalBank extends Procesador {
+    private NationalBankApi api; 
+    @Override
+    public Resultado RealizarOperacion(InformacionOperacion info) {
+        String ref = api.postTransaction(/*Todos los datos como atributos*/);
+        //Manejo del resultado
+    }
+
+    @Override
+    public double calcularTarifa(double monto) { return 0; } // gratis
+}
+
+public class PacificBank extends Procesador {
+    private PacificBankApi api; 
+    @Override
+    public Resultado RealizarOperacion(InformacionOperacion info) {
+        // Traduce al formato de Pacific: monto en centavos
+        long centavos = Math.round(info.getMonto() * 100);
+
+        // Convierte los datos un objeto que permite usar la api y sea serializable
+        // Lo manda por la red
+        // van dentro de api.send(...)
+        String respuesta = api.send(/* datos de info */);
+
+        //Manejo del resultado
+    }
+}
+```
+
 ## Diagrama:
 ```mermaid
 classDiagram
@@ -186,7 +277,6 @@ classDiagram
 
     class IdNacional {
         - fechaNacimiento : Date
-        - fechaCaducidad : Date
     }
 
     class IdImpuesto {
@@ -197,6 +287,7 @@ classDiagram
         - nacionalidad : String
         - fechaDeExpedicion : Date
         - fechaCaducidad : Date
+        + esValido() : boolean
     }
 
     class Residencia {
