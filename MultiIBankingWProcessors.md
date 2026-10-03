@@ -2,7 +2,8 @@ Estudiante : Andrés Madrigal
 ## Spec
 
 //El usuario genera un dato para su transaccion y este pasa 
-por varias capas hasta llegar a la implementacion especifica del procesador para luego ser aplicados los cambios en la base de datos.
+por varias capas hasta llegar a la implementacion especifica del procesador
+ para luego ser aplicados los cambios en la base de datos.
 
 ### documentos:
 #### IdentityType (enum)
@@ -172,7 +173,7 @@ En las clases de Cuenta podemos ver un ejemplo de polimorfismo, en la forma de c
 
 Usemos como ejemplo el metodo depositar, el cual se puede comenzar a construir con una base en el super:
 
-```
+```java
 public abstract class Cuenta implements Depositar, Withdraw {
     /*Codigo*/
 
@@ -190,7 +191,7 @@ public abstract class Cuenta implements Depositar, Withdraw {
 
 ```
 Cuentas basicas como la cuenta personal problemente puedan utilizarla sin mayor problema como super; o simplemente no se le hace Override.
-```
+```java
 public class Personal extends Cuenta implements DomesticTransfer {
     /*Codigo*/
 
@@ -204,7 +205,7 @@ public class Personal extends Cuenta implements DomesticTransfer {
 }
 ```
 Mientras que clases más complejas como Extranjero donde hay que hacer una verificacion se pueden ver así:
-```
+```java
 public class Extranjero extends Cuenta implements DomesticTransfer, InternationalTransfer {
     /*Codigo*/
     @Override
@@ -224,7 +225,7 @@ public class Extranjero extends Cuenta implements DomesticTransfer, Internationa
 Otro ejemplo son los procesadores, no conocemos exactamente como se utilizan. Como funciona exactamente la Api de ninguno de ellos y pueden utilizar objetos totalmente imcompatibles.
 
 Digamos que el NacionalBank funciona por alguna razon de forma local y se pasan los datos por atributos, mientras que con PacificBank es con un objeto por red.
-```
+```java
 public class NationalBank extends Procesador {
     private NationalBankApi api; 
     @Override
@@ -253,7 +254,7 @@ public class PacificBank extends Procesador {
     }
 }
 ```
-Ambos sistemas son totalmente distintos y tienen requisitos distintos pero pueden ser implementados por la misma 
+Ambos sistemas son totalmente distintos y tienen requisitos distintos pero pueden ser implementados usando la misma clase abstracta y como se implementan esta unicamente en su clase.
 
 
 ## Diagrama:
