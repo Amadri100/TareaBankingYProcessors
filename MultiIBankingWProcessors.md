@@ -205,7 +205,7 @@ public class Personal extends Cuenta implements DomesticTransfer {
 ```
 Mientras que clases más complejas como Extranjero donde hay que hacer una verificacion se pueden ver así:
 ```
-public class Personal extends Cuenta implements DomesticTransfer, InternationalTransfer {
+public class Extranjero extends Cuenta implements DomesticTransfer, InternationalTransfer {
     /*Codigo*/
     @Override
     public Resultado depositar(InformacionOperacion info, Procesador procesador) {
@@ -223,7 +223,7 @@ public class Personal extends Cuenta implements DomesticTransfer, InternationalT
 ```
 Otro ejemplo son los procesadores, no conocemos exactamente como se utilizan. Como funciona exactamente la Api de ninguno de ellos y pueden utilizar objetos totalmente imcompatibles.
 
-Digamos que el NacionalBank funciona por alguna razon de forma local y se pasan por atributos, mientras que con PacificBank es por red.
+Digamos que el NacionalBank funciona por alguna razon de forma local y se pasan los datos por atributos, mientras que con PacificBank es con un objeto por red.
 ```
 public class NationalBank extends Procesador {
     private NationalBankApi api; 
@@ -253,6 +253,8 @@ public class PacificBank extends Procesador {
     }
 }
 ```
+Ambos sistemas son totalmente distintos y tienen requisitos distintos pero pueden ser implementados por la misma 
+
 
 ## Diagrama:
 ```mermaid
